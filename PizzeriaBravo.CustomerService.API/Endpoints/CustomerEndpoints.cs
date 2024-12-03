@@ -1,4 +1,5 @@
-﻿using PizzeriaBravo.CustomerService.API.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
+using PizzeriaBravo.CustomerService.API.Interfaces;
 using PizzeriaBravo.CustomerService.DataAccess.Entities;
 using PizzeriaBravo.CustomerService.DataAccess.Interfaces;
 
@@ -8,35 +9,33 @@ public static class CustomerEndpoints
 {
     public static void MapCustomerEndpoints(this IEndpointRouteBuilder routes)
     {
-        var unitOfWork = routes.ServiceProvider.GetRequiredService<IUnitOfWork>() as UnitOfWork;
-
-        routes.MapGet("/api/customers", async () =>
+        routes.MapGet("/api/customers", async ([FromServices] IUnitOfWork unitOfWork) =>
         {
-            if (unitOfWork is null)
+            if (unitOfWork is not UnitOfWork concreteUnitOfWork)
             {
                 return Results.BadRequest("Unit of work is not available");
             }
 
-            var customers = await unitOfWork.CustomerRepository.GetAllAsync();
+            var customers = await concreteUnitOfWork.CustomerRepository.GetAllAsync();
 
             return Results.Ok(customers);
         });
 
-        routes.MapGet("/api/customers/{id}", async (Guid id) =>
+        routes.MapGet("/api/customers/{id}", async ([FromServices] IUnitOfWork unitOfWork, Guid id) =>
         {
-            if (unitOfWork is null)
+            if (unitOfWork is not UnitOfWork concreteUnitOfWork)
             {
                 return Results.BadRequest("Unit of work is not available");
             }
 
-            var customer = await unitOfWork.CustomerRepository.GetByIdAsync(id);
+            var customer = await concreteUnitOfWork.CustomerRepository.GetByIdAsync(id);
 
             return customer is null ? Results.NotFound() : Results.Ok(customer);
         });
 
-        routes.MapPost("/api/customers", async (Customer customer) =>
+        routes.MapPost("/api/customers", async ([FromServices] IUnitOfWork unitOfWork, Customer customer) =>
         {
-            if (unitOfWork is null)
+            if (unitOfWork is not UnitOfWork concreteUnitOfWork)
             {
                 return Results.BadRequest("Unit of work is not available");
             }
@@ -51,30 +50,36 @@ public static class CustomerEndpoints
                 return Results.BadRequest("Email and address are required");
             }
 
-            await unitOfWork.CustomerRepository.AddAsync(customer);
+            await concreteUnitOfWork.CustomerRepository.AddAsync(customer);
 
             return Results.Created($"/api/customers/{customer.Id}", customer);
         });
 
-        routes.MapPut("/api/customers/{id}", async (IRepository<Guid, Customer> repository, Guid id, Customer customer) =>
+        routes.MapPut("/api/customers/{id}", async ([FromServices] IUnitOfWork unitOfWork, Guid id, Customer customer) =>
         {
+            if (unitOfWork is not UnitOfWork concreteUnitOfWork)
+            {
+                return Results.BadRequest("Unit of work is not available");
+            }
+
             if (id != customer.Id)
             {
                 return Results.BadRequest("Customer ID mismatch");
             }
-            await repository.UpdateAsync(customer);
+
+            await concreteUnitOfWork.CustomerRepository.UpdateAsync(customer);
             return Results.Ok(customer);
         });
 
-        routes.MapDelete("/api/customers/{id}", async (IRepository<Guid, Customer> repository, Guid id) =>
+        routes.MapDelete("/api/customers/{id}", async ([FromServices] IUnitOfWork unitOfWork, Guid id) =>
         {
-            await repository.DeleteAsync(id);
+            if (unitOfWork is not UnitOfWork concreteUnitOfWork)
+            {
+                return Results.BadRequest("Unit of work is not available");
+            }
+
+            await concreteUnitOfWork.CustomerRepository.DeleteAsync(id);
             return Results.NoContent();
         });
-    }
-
-    public static void CheckCorrectFormat()
-    {
-
     }
 }
