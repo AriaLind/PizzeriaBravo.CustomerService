@@ -6,7 +6,7 @@ public interface IRepository<TId, TEntity> where TId : notnull where TEntity : I
 {
     Task<TEntity?> GetByIdAsync(TId id);
     Task<IEnumerable<Customer>> GetAllAsync();
-    Task AddAsync(TEntity entity);
-    Task UpdateAsync(TEntity entity);
-    Task DeleteAsync(TId id);
+    Task<bool> AddAsync(TEntity entity);
+    Task<bool> UpdateAsync(TEntity entity);
+    Task<bool> DeleteAsync(TId id);
 }

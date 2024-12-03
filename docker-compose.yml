@@ -1,0 +1,23 @@
+services:
+  pizzeriabrovo-customerservice:
+    environment:
+      - MSSQL_SA_PASSWORD=Password1*
+    container_name: pizzeriabrovo-customerservice
+    build:
+      context: .
+      dockerfile: PizzeriaBravo.CustomerService.API/Dockerfile
+    ports:
+      - "3002:3002"
+    depends_on:
+      - docker_sqlserver
+
+  docker_sqlserver:
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Password1*
+    container_name: docker_sqlserver
+    build:
+      context: .
+      dockerfile: PizzeriaBravo.CustomerService.DataAccess/Dockerfile
+    ports:
+      - "1433:1433"

@@ -16,12 +16,14 @@ public class CustomerRepository(AppDbContext appDbContext) : IRepository<Guid, C
         return await appDbContext.Customers.ToListAsync();
     }
 
-    public async Task AddAsync(Customer entity)
+    public async Task<bool> AddAsync(Customer entity)
     {
-        await appDbContext.Customers.AddAsync(entity);
+        var result = await appDbContext.Customers.AddAsync(entity);
+
+        return result.State == EntityState.Added;
     }
 
-    public async Task UpdateAsync(Customer entity)
+    public async Task<bool> UpdateAsync(Customer entity)
     {
         if (entity is null)
         {
@@ -38,10 +40,12 @@ public class CustomerRepository(AppDbContext appDbContext) : IRepository<Guid, C
         customer.Email = entity.Email;
         customer.Address = entity.Address;
 
-        appDbContext.Customers.Update(customer);
+        var result = appDbContext.Customers.Update(customer);
+
+        return result.State == EntityState.Modified;
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(Guid id)
     {
         var customer = await appDbContext.Customers.FindAsync(id);
 
@@ -50,6 +54,7 @@ public class CustomerRepository(AppDbContext appDbContext) : IRepository<Guid, C
             throw new InvalidOperationException("Customer not found");
         }
 
-        appDbContext.Customers.Remove(customer);
+        var result = appDbContext.Customers.Remove(customer);
+        return result.State == EntityState.Deleted;
     }
 }

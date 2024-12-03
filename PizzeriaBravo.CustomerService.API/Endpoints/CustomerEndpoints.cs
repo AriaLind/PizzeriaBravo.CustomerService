@@ -30,19 +30,16 @@ public static class CustomerEndpoints
 
         routes.MapPost("/api/customers", async (Customer customer) =>
         {
-            if (customer.Id == Guid.Empty)
+            customer.Id = Guid.NewGuid();
+
+            var result = await concreteUnitOfWork.CustomerRepository.AddAsync(customer);
+
+            if (result.Equals(true))
             {
-                customer.Id = Guid.NewGuid();
+                await concreteUnitOfWork.SaveChangesAsync();
             }
 
-            if (string.IsNullOrWhiteSpace(customer.Email) || string.IsNullOrWhiteSpace(customer.Address))
-            {
-                return Results.BadRequest("Email and address are required");
-            }
-
-            await concreteUnitOfWork.CustomerRepository.AddAsync(customer);
-
-            return Results.Created($"/api/customers/{customer.Id}", customer);
+            return result ? Results.Created($"/api/customers/{customer.Id}", customer) : Results.BadRequest();
         });
 
         routes.MapPut("/api/customers/{id}", async (Guid id, Customer customer) =>
@@ -52,14 +49,26 @@ public static class CustomerEndpoints
                 return Results.BadRequest("Customer ID mismatch");
             }
 
-            await concreteUnitOfWork.CustomerRepository.UpdateAsync(customer);
-            return Results.Ok(customer);
+            var result = await concreteUnitOfWork.CustomerRepository.UpdateAsync(customer);
+
+            if (result.Equals(true))
+            {
+                await concreteUnitOfWork.SaveChangesAsync();
+            }
+
+            return result ? Results.Ok(result) : Results.BadRequest();
         });
 
         routes.MapDelete("/api/customers/{id}", async (Guid id) =>
         {
-            await concreteUnitOfWork.CustomerRepository.DeleteAsync(id);
-            return Results.NoContent();
+            var result = await concreteUnitOfWork.CustomerRepository.DeleteAsync(id);
+
+            if (result.Equals(true))
+            {
+                await concreteUnitOfWork.SaveChangesAsync();
+            }
+
+            return result ? Results.Ok() : Results.NotFound();
         });
     }
 }
