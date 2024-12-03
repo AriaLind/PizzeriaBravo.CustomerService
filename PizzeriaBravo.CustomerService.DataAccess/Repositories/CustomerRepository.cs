@@ -1,32 +1,55 @@
-﻿using PizzeriaBravo.CustomerService.DataAccess.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using PizzeriaBravo.CustomerService.DataAccess.Entities;
 using PizzeriaBravo.CustomerService.DataAccess.Interfaces;
 
 namespace PizzeriaBravo.CustomerService.DataAccess.Repositories;
 
-public class CustomerRepository(AppDbContext? appDbContext) : IRepository<Guid, Customer>
+public class CustomerRepository(AppDbContext appDbContext) : IRepository<Guid, Customer>
 {
-    public Task<Customer?> GetByIdAsync(Guid id)
-    {
-        throw new NotImplementedException();
+    public async Task<Customer?> GetByIdAsync(Guid id)
+    { 
+        return await appDbContext.Customers.FindAsync(id);
     }
 
-    public Task<IEnumerable<Customer>> GetAllAsync()
+    public async Task<IEnumerable<Customer>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        return await appDbContext.Customers.ToListAsync();
     }
 
-    public Task AddAsync(Customer entity)
+    public async Task AddAsync(Customer entity)
     {
-        throw new NotImplementedException();
+        await appDbContext.Customers.AddAsync(entity);
     }
 
-    public Task UpdateAsync(Customer entity)
+    public async Task UpdateAsync(Customer entity)
     {
-        throw new NotImplementedException();
+        if (entity is null)
+        {
+            throw new ArgumentNullException(nameof(entity));
+        }
+
+        var customer = await appDbContext.Customers.FindAsync(entity.Id);
+
+        if (customer is null)
+        {
+            throw new InvalidOperationException("Customer not found");
+        }
+
+        customer.Email = entity.Email;
+        customer.Address = entity.Address;
+
+        appDbContext.Customers.Update(customer);
     }
 
-    public Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var customer = await appDbContext.Customers.FindAsync(id);
+
+        if (customer is null)
+        {
+            throw new InvalidOperationException("Customer not found");
+        }
+
+        appDbContext.Customers.Remove(customer);
     }
 }

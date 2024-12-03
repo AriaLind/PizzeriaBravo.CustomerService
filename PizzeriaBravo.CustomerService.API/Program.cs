@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using PizzeriaBravo.CustomerService.API;
 using PizzeriaBravo.CustomerService.API.Endpoints;
 using PizzeriaBravo.CustomerService.API.Interfaces;
@@ -22,7 +23,8 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-app.MapCustomerEndpoints();
+var unitOfWork = app.Services.CreateScope().ServiceProvider.GetRequiredService<IUnitOfWork>();
+app.MapCustomerEndpoints(unitOfWork);
 
 
 if (app.Environment.IsDevelopment())
