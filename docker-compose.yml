@@ -4,7 +4,7 @@ services:
       - MSSQL_SA_PASSWORD=Password1*
     container_name: customerservice
     image: arialind/pizzeriabravo-customerservice-api
-    # FOR LOCAL BUILD
+    FOR LOCAL BUILD
     # build:
     #   context: .
     #   dockerfile: PizzeriaBravo.CustomerService.API/Dockerfile
