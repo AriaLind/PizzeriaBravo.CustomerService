@@ -21,11 +21,13 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
       
-    # Build the Docker image and tag it with "latest"
-    - name: Build and tag the Docker image as latest
+    # Build the Docker image with multiple tags
+    - name: Build the Docker image with multiple tags
       run: |
-        docker build . --file Dockerfile --tag arialind/pizzeriabravo-customerservice-api:latest
-        docker build . --file Dockerfile --tag arialind/pizzeriabravo-customerservice-api:${{ github.run_id }}
+        docker build . --file Dockerfile \
+          --tag arialind/pizzeriabravo-customerservice-api:latest \
+          --tag arialind/pizzeriabravo-customerservice-api:${{ github.run_id }}
+          
     # Push the latest Docker image
     - name: Push the latest Docker image
       run: |
