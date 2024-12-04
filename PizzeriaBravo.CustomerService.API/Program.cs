@@ -23,6 +23,7 @@ builder.Services.AddDbContext<AppDbContext>(
 
     });
 
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
