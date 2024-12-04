@@ -40,19 +40,20 @@ public static class CustomerEndpoints
                 Success = true
             };
 
-            return customer is null ? Results.NotFound() : Results.Ok(response);
+            if (customer is null)
+            {
+                response.Message = "Customer not found";
+                response.Success = false;
+            }
+
+            return customer is null ? Results.NotFound(response) : Results.Ok(response);
         });
 
         routes.MapPost("/api/customers", async (Customer customer) =>
         {
             customer.Id = Guid.NewGuid();
 
-            var result = await concreteUnitOfWork.CustomerRepository.AddAsync(customer);
-
-            if (result.Equals(true))
-            {
-                await concreteUnitOfWork.SaveChangesAsync();
-            }
+            var result = true;
 
             var response = new Response
             {
@@ -61,36 +62,101 @@ public static class CustomerEndpoints
                 Success = result
             };
 
-            return result ? Results.Created($"/api/customers/{customer.Id}", response) : Results.BadRequest();
+            try
+            {
+                await concreteUnitOfWork.CustomerRepository.AddAsync(customer);
+            }
+            catch(Exception ex)
+            {
+                result = false;
+                response.Message = ex.Message;
+            }
+
+            if (result.Equals(true))
+            {
+                await concreteUnitOfWork.SaveChangesAsync();
+            }
+
+            return result ? Results.Created($"/api/customers/{customer.Id}", response) : Results.BadRequest(response);
         });
 
         routes.MapPut("/api/customers/{id}", async (Guid id, Customer customer) =>
         {
-            if (id != customer.Id)
+            var result = true;
+
+            var response = new Response
             {
-                return Results.BadRequest("Customer ID mismatch");
+                Data = customer,
+                Message = "Customer updated successfully",
+                Success = result
+            };
+
+            if (await concreteUnitOfWork.CustomerRepository.GetByIdAsync(id) is null)
+            {
+                response.Message = "Customer not found";
+                response.Success = false;
+                return Results.NotFound(response);
             }
 
-            var result = await concreteUnitOfWork.CustomerRepository.UpdateAsync(customer);
+            if (id != customer.Id)
+            {
+                response.Message = "Customer ID mismatch";
+                response.Success = false;
+                return Results.BadRequest(response);
+            }
+
+            try
+            {
+                await concreteUnitOfWork.CustomerRepository.UpdateAsync(customer);
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                response.Message = ex.Message;
+            }
 
             if (result.Equals(true))
             {
                 await concreteUnitOfWork.SaveChangesAsync();
             }
 
-            return result ? Results.Ok(result) : Results.BadRequest();
+            return result ? Results.Ok(response) : Results.BadRequest(response);
         });
 
         routes.MapDelete("/api/customers/{id}", async (Guid id) =>
         {
-            var result = await concreteUnitOfWork.CustomerRepository.DeleteAsync(id);
+            var result = true;
+
+            var response = new Response
+            {
+                Data = null,
+                Message = "Customer deleted successfully",
+                Success = result
+            };
+
+            if (await concreteUnitOfWork.CustomerRepository.GetByIdAsync(id) is null)
+            {
+                response.Message = "Customer not found";
+                response.Success = false;
+                return Results.NotFound(response);
+            }
+
+            try
+            {
+                await concreteUnitOfWork.CustomerRepository.DeleteAsync(id);
+            }
+            catch (Exception ex)
+            {
+                result = false;
+                response.Message = ex.Message;
+            }
 
             if (result.Equals(true))
             {
                 await concreteUnitOfWork.SaveChangesAsync();
             }
 
-            return result ? Results.Ok() : Results.NotFound();
+            return result ? Results.Ok(response) : Results.NotFound(response);
         });
     }
 }
