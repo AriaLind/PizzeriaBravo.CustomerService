@@ -1,5 +1,8 @@
 name: Docker Image CI
 
+env: 
+  VERSION_NUMBER_INCREMENT: ${{ github.run_number }}
+
 on:
   push:
     branches: [ "master" ]
@@ -24,7 +27,7 @@ jobs:
     # Build the Docker image and tag it with "latest"
     - name: Build and tag the Docker image as latest
       run: |
-        docker build . --file Dockerfile --tag arialind/pizzeriabravo-customerservice-api:${{ github.run_number }}
+        docker build . --file Dockerfile --tag arialind/pizzeriabravo-customerservice-api:$VERSION_NUMBER_INCREMENT
     # Push the latest Docker image
     - name: Push the latest Docker image
-      run: docker push arialind/pizzeriabravo-customerservice-api:${{ github.run_number }}
+      run: docker push arialind/pizzeriabravo-customerservice-api:$VERSION_NUMBER_INCREMENT
