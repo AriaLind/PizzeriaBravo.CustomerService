@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using PizzeriaBravo.CustomerService.API;
 using PizzeriaBravo.CustomerService.API.Endpoints;
 using PizzeriaBravo.CustomerService.API.Interfaces;
