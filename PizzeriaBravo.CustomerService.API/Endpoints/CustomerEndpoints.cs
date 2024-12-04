@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PizzeriaBravo.CustomerService.API.Interfaces;
+using PizzeriaBravo.CustomerService.API.Payloads;
 using PizzeriaBravo.CustomerService.DataAccess.Entities;
 using PizzeriaBravo.CustomerService.DataAccess.Interfaces;
 
@@ -18,14 +19,28 @@ public static class CustomerEndpoints
         {
             var customers = await concreteUnitOfWork.CustomerRepository.GetAllAsync();
 
-            return Results.Ok(customers);
+            var response = new Response
+            {
+                Data = customers,
+                Message = string.Empty,
+                Success = true
+            };
+
+            return Results.Ok(response);
         });
 
         routes.MapGet("/api/customers/{id}", async (Guid id) =>
         {
             var customer = await concreteUnitOfWork.CustomerRepository.GetByIdAsync(id);
 
-            return customer is null ? Results.NotFound() : Results.Ok(customer);
+            var response = new Response
+            {
+                Data = customer,
+                Message = string.Empty,
+                Success = true
+            };
+
+            return customer is null ? Results.NotFound() : Results.Ok(response);
         });
 
         routes.MapPost("/api/customers", async (Customer customer) =>
@@ -39,7 +54,14 @@ public static class CustomerEndpoints
                 await concreteUnitOfWork.SaveChangesAsync();
             }
 
-            return result ? Results.Created($"/api/customers/{customer.Id}", customer) : Results.BadRequest();
+            var response = new Response
+            {
+                Data = customer,
+                Message = "Customer created successfully",
+                Success = result
+            };
+
+            return result ? Results.Created($"/api/customers/{customer.Id}", response) : Results.BadRequest();
         });
 
         routes.MapPut("/api/customers/{id}", async (Guid id, Customer customer) =>
