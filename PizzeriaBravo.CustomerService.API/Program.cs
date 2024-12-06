@@ -19,7 +19,11 @@ builder.Services.AddDbContext<AppDbContext>(
             var password = Environment.GetEnvironmentVariable("MSSQL_SA_PASSWORD");
             connectionString = string.Format(connectionString, password);
         }
-        options.UseSqlServer(connectionString);
+        options.UseSqlServer(connectionString, sqlServerOptions => sqlServerOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null
+            ));
 
     });
 
