@@ -14,4 +14,4 @@ COPY --from=build-env /App/out ./
 EXPOSE 3002
 ENV ASPNETCORE_URLS=http://+:3002
 
-ENTRYPOINT ["dotnet", "PizzeriaBravo.CustomerService.API.dll"]
+# ENTRYPOINT ["dotnet", "PizzeriaBravo.CustomerService.API.dll"]
