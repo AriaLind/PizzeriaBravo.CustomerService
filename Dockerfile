@@ -3,7 +3,7 @@ WORKDIR /App
 
 COPY . ./
 
-RUN /App/chmod +x wait-for-it.sh
+RUN chmod +x wait-for-it.sh
 
 RUN dotnet restore
 RUN dotnet publish -c Release -o out
