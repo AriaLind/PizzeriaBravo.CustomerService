@@ -57,24 +57,6 @@ using (var scope = app.Services.CreateScope())
     {
         db.Database.Migrate();
     }
-
-    var canConnect = false;
-
-    while (canConnect.Equals(false))
-    {
-        try
-        {
-            canConnect = db.Database.CanConnect();
-
-            Console.WriteLine(canConnect ? "Database connection is healthy." : "Database connection is not healthy.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error connecting to the database: {ex.Message}");
-        }
-
-        await Task.Delay(TimeSpan.FromSeconds(5));
-    }
 }
 
 app.Run();
