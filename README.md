@@ -175,7 +175,7 @@ Creates a new customer.
     }
     ```
 
-### DELETE /api/customers/{id}
+### 5. DELETE /api/customers/{id}
 
 Deletes a customer by their unique identifier.
 
