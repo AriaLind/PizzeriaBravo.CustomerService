@@ -5,6 +5,8 @@ using PizzeriaBravo.CustomerService.API.Interfaces;
 using PizzeriaBravo.CustomerService.DataAccess;
 using Scalar.AspNetCore;
 
+Thread.Sleep(TimeSpan.FromSeconds(15));
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
@@ -56,7 +58,5 @@ using (var scope = app.Services.CreateScope())
         db.Database.Migrate();
     }
 }
-
-Thread.Sleep(TimeSpan.FromSeconds(15));
 
 app.Run();
