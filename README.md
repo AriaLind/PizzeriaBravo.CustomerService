@@ -1,5 +1,23 @@
 # Customer Service API Specification
 
+## All endpoints return a response object.
+
+The response object has the following structure:
+
+```json
+{
+  "data": <response_data>,
+  "message": "<response_message>",
+  "success": <true_or_false>
+}
+```
+
+Where:
+
+- `data`: Contains the response data (can be `null` if no data is returned).
+- `message`: A descriptive message, often indicating success or error.
+- `success`: A boolean indicating whether the request was successful.
+
 ## Endpoints
 
 ### 1. Get All Customers
