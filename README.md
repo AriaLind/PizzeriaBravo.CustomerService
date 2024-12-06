@@ -89,7 +89,6 @@ Creates a new customer.
 
 ```json
 {
-  "name": "John Doe",
   "email": "john.doe@example.com",
   "address": "ExampleAddress"
 }
@@ -134,7 +133,6 @@ Creates a new customer.
 
 ```json
 {
-  "name": "John Doe",
   "email": "john.doe@example.com",
   "address": "ExampleAddress"
 }
