@@ -57,4 +57,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+Thread.Sleep(TimeSpan.FromSeconds(15));
+
 app.Run();
