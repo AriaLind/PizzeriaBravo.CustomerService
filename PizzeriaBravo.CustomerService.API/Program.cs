@@ -5,7 +5,7 @@ using PizzeriaBravo.CustomerService.API.Interfaces;
 using PizzeriaBravo.CustomerService.DataAccess;
 using Scalar.AspNetCore;
 
-//Thread.Sleep(TimeSpan.FromSeconds(15));
+Thread.Sleep(TimeSpan.FromSeconds(15));
 
 var builder = WebApplication.CreateBuilder(args);
 
