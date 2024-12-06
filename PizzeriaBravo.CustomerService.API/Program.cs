@@ -5,7 +5,7 @@ using PizzeriaBravo.CustomerService.API.Interfaces;
 using PizzeriaBravo.CustomerService.DataAccess;
 using Scalar.AspNetCore;
 
-Thread.Sleep(TimeSpan.FromSeconds(15));
+//Thread.Sleep(TimeSpan.FromSeconds(15));
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -73,7 +73,7 @@ using (var scope = app.Services.CreateScope())
             Console.WriteLine($"Error connecting to the database: {ex.Message}");
         }
 
-        await Task.Delay(TimeSpan.FromSeconds(5)); // 10 seconds delay
+        await Task.Delay(TimeSpan.FromSeconds(5));
     }
 }
 
